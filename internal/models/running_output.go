@@ -66,6 +66,7 @@ func (ro *RunningOutput) AddMetric(metric telegraf.Metric) {
 			ro.metrics = append(ro.metrics, metric)
 			tmpmetrics := make([]telegraf.Metric, len(ro.metrics))
 			copy(tmpmetrics, ro.metrics)
+			ro.deletebuffer()
 			ro.metrics = make([]telegraf.Metric, 0)
 			err := ro.write(tmpmetrics)
 			if err != nil {
@@ -104,6 +105,7 @@ func (ro *RunningOutput) Write() error {
 	if err != nil {
 		return err
 	} else {
+		ro.deletebuffer()
 		ro.metrics = make([]telegraf.Metric, 0)
 		ro.overwriteI = 0
 	}
@@ -118,6 +120,14 @@ func (ro *RunningOutput) Write() error {
 	}
 
 	return nil
+}
+
+// delete the output buffer
+// see https://github.com/golang/go/wiki/SliceTricks
+func (ro *RunningOutput) deletebuffer() {
+	for i, _ := range ro.metrics {
+		ro.metrics[i] = nil
+	}
 }
 
 func (ro *RunningOutput) write(metrics []telegraf.Metric) error {
