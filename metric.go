@@ -56,39 +56,39 @@ func NewMetric(
 	if err != nil {
 		return nil, err
 	}
-	return &metric{
+	return metric{
 		pt: pt,
 	}, nil
 }
 
-func (m *metric) Name() string {
+func (m metric) Name() string {
 	return m.pt.Name()
 }
 
-func (m *metric) Tags() map[string]string {
+func (m metric) Tags() map[string]string {
 	return m.pt.Tags()
 }
 
-func (m *metric) Time() time.Time {
+func (m metric) Time() time.Time {
 	return m.pt.Time()
 }
 
-func (m *metric) UnixNano() int64 {
+func (m metric) UnixNano() int64 {
 	return m.pt.UnixNano()
 }
 
-func (m *metric) Fields() map[string]interface{} {
+func (m metric) Fields() map[string]interface{} {
 	return m.pt.Fields()
 }
 
-func (m *metric) String() string {
+func (m metric) String() string {
 	return m.pt.String()
 }
 
-func (m *metric) PrecisionString(precison string) string {
+func (m metric) PrecisionString(precison string) string {
 	return m.pt.PrecisionString(precison)
 }
 
-func (m *metric) Point() *client.Point {
+func (m metric) Point() *client.Point {
 	return m.pt
 }
