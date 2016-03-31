@@ -9,6 +9,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/pkg/profile"
+
 	"github.com/influxdata/telegraf/agent"
 	"github.com/influxdata/telegraf/internal/config"
 	"github.com/influxdata/telegraf/plugins/inputs"
@@ -90,6 +92,7 @@ Examples:
 `
 
 func main() {
+	defer profile.Start(profile.MemProfile).Stop()
 	reload := make(chan bool, 1)
 	reload <- true
 	for <-reload {
