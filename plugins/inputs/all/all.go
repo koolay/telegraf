@@ -30,6 +30,7 @@ import (
 	_ "github.com/influxdata/telegraf/plugins/inputs/nats_consumer"
 	_ "github.com/influxdata/telegraf/plugins/inputs/net_response"
 	_ "github.com/influxdata/telegraf/plugins/inputs/nginx"
+	_ "github.com/influxdata/telegraf/plugins/inputs/nginx_log"
 	_ "github.com/influxdata/telegraf/plugins/inputs/nsq"
 	_ "github.com/influxdata/telegraf/plugins/inputs/ntpq"
 	_ "github.com/influxdata/telegraf/plugins/inputs/passenger"
