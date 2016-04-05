@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hpcloud/tail"
@@ -15,6 +16,7 @@ import (
 )
 
 type NginxLog struct {
+	sync.Mutex
 	// Lock for preventing a data race during resource cleanup
 	Sources []string
 
@@ -111,12 +113,16 @@ func (n *NginxLog) parse(logLine string, acc telegraf.Accumulator) {
 
 // Start starts the tcp listener service.
 func (n *NginxLog) Start(acc telegraf.Accumulator) error {
+	n.Lock()
+	defer n.Unlock()
 	n.acc = acc
 	return n.Gather(acc)
 }
 
 // Stop cleans up all resources
 func (n *NginxLog) Stop() {
+	n.Lock()
+	defer n.Unlock()
 	for _, t := range n.tails {
 		t.Cleanup()
 		t.Stop()
