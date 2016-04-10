@@ -27,8 +27,8 @@ type NginxLog struct {
 }
 
 const sampleConfig = `
-  ## input files
-  sources = ["/var/log/nginx/nginx-error.log"]
+## input files
+sources = ["/var/log/nginx/nginx-error.log"]
 `
 
 func (n *NginxLog) SampleConfig() string {
@@ -71,6 +71,9 @@ func (n *NginxLog) Gather(acc telegraf.Accumulator) error {
 
 func (n *NginxLog) parse(logLine string, acc telegraf.Accumulator) {
 
+	if logLine == "" {
+		return
+	}
 	patternString := `(?P<host>[^\s]+)\s+(?P<remote_add>[^\s]+)\s+\[(?P<created_time>[^\s\]]+\s+\+\d+)\]`
 	patternString += `\s+\"[A-Z]+\s+(?P<request_path>[^\s\?]+)[^\s]*\s+[^"]+"\s+(?P<status_code>\d+)`
 	patternString += `\s+(?P<body_size>\d+)\s+"[^\s]+"\s+"[^"]+"\s+(?P<request_time>\d+\.\d+)`
@@ -100,14 +103,17 @@ func (n *NginxLog) parse(logLine string, acc telegraf.Accumulator) {
 		}
 		fields["response_time"] = responseTime
 		fields["body_size"] = bodySize
-	}
-	requestTime, err := time.Parse("02/Jan/2006:15:04:05 -0700", matchGroups[3])
-	if err != nil {
-		log.Fatalf("Error: requestTime parse fail! from:%s, line:%s", matchGroups[3], logLine)
 
-	}
+		requestTime, err := time.Parse("02/Jan/2006:15:04:05 -0700", matchGroups[3])
+		if err != nil {
+			log.Fatalf("Error: requestTime parse fail! from:%s, line:%s", matchGroups[3], logLine)
 
-	acc.AddFields("nginx_log", fields, tags, requestTime)
+		}
+
+		acc.AddFields("nginx_log", fields, tags, requestTime)
+	} else {
+		log.Println("parse failure with:" + logLine)
+	}
 
 }
 
