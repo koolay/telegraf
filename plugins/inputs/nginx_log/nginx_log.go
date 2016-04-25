@@ -53,7 +53,7 @@ func (n *NginxLog) Gather(acc telegraf.Accumulator) error {
 			return fmt.Errorf("file not exits '%s'", file)
 		}
 
-		go func() {
+		go func(file string) {
 			t, err := tail.TailFile(file, cfg)
 			if err != nil {
 				log.Fatalf("ERROR: tail file: %s - %s", file, err)
@@ -61,9 +61,8 @@ func (n *NginxLog) Gather(acc telegraf.Accumulator) error {
 			n.tails = append(n.tails, t)
 			for line := range t.Lines {
 				n.parse(line.Text, acc)
-				//fmt.Println(line.Text)
 			}
-		}()
+		}(file)
 	}
 
 	return nil
